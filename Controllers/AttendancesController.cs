@@ -8,7 +8,7 @@ namespace AbsensiApi.Controllers
 {
     [ApiController]
     [Authorize]
-    [Route("api/[controller]")]
+    [Route("api/attendance")] // ✨ SUDAH DIUBAH: Mengunci jalur ke /api/attendance agar cocok dengan Vercel
     public class AttendancesController : ControllerBase
     {
         private readonly AppDbContext _context;
