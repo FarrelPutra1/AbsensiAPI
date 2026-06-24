@@ -12,7 +12,9 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAll", policy =>
     {
-        policy.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader();
+        policy.WithOrigins("https://absensi-web-kappa.vercel.app")
+              .AllowAnyMethod()
+              .AllowAnyHeader();
     });
 });
 
@@ -59,7 +61,12 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+// MATIKAN BARIS INI: Beri tanda komentar agar tidak merusak routing di Railway
 // app.UseHttpsRedirection();
+
+// PERBAIKAN DI SINI: Menambahkan routing agar sistem CORS mengenali endpoint dengan benar
+app.UseRouting();
+
 app.UseCors("AllowAll");
 
 // 5. Jalankan Autentikasi & Otorisasi
