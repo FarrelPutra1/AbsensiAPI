@@ -24,33 +24,33 @@ namespace AbsensiApi.Controllers
         }
 
         [HttpPost("register")]
-public async Task<IActionResult> Register(User user)
-{
-    // 1. Simpan User
-    user.Password = HashPassword(user.Password);
-    _context.Users.Add(user);
-    await _context.SaveChangesAsync(); // Sekarang user.Id sudah tersedia
+        public async Task<IActionResult> Register(User user)
+        {
+            // 1. Simpan User
+            user.Password = HashPassword(user.Password);
+            _context.Users.Add(user);
+            await _context.SaveChangesAsync(); // Sekarang user.Id sudah tersedia
 
-    // 2. OTOMATIS buat Student profile yang terhubung ke User tersebut
-    var newStudent = new Student
-    {
-        Nama = user.NamaLengkap,
-        NomorInduk = "AUTO-" + user.Id, // Contoh generate nomor induk
-        UserId = user.Id // Menghubungkan secara otomatis!
-    };
-    
-    _context.Students.Add(newStudent);
-    await _context.SaveChangesAsync();
+            // 2. OTOMATIS buat Student profile yang terhubung ke User tersebut
+            var newStudent = new Student
+            {
+                Nama = user.NamaLengkap,
+                NomorInduk = "AUTO-" + user.Id, // Contoh generate nomor induk
+                UserId = user.Id // Menghubungkan secara otomatis!
+            };
+            
+            _context.Students.Add(newStudent);
+            await _context.SaveChangesAsync();
 
-    return Ok(new { message = "Registrasi berhasil dan profil siswa dibuat!" });
-}
+            return Ok(new { message = "Registrasi berhasil dan profil siswa dibuat!" });
+        }
 
         [HttpPost("login")]
-        public async Task<IActionResult> Login([FromBody] User loginDto)
+        public async Task<IActionResult> Login([FromBody] LoginRequest loginDto)
         {
             var hashedPassword = HashPassword(loginDto.Password);
             
-            // 1. Validasi User
+            // 1. Validasi User menggunakan data dari LoginRequest
             var user = await _context.Users
                 .FirstOrDefaultAsync(u => u.Username == loginDto.Username && u.Password == hashedPassword);
 
@@ -60,7 +60,6 @@ public async Task<IActionResult> Register(User user)
             }
 
             // 2. Cari StudentId yang terkait dengan User ini
-            // Pastikan di Model Student ada property 'UserId'
             var student = await _context.Students.FirstOrDefaultAsync(s => s.UserId == user.Id);
             
             // Jika user belum memiliki profil siswa, beri nilai 0
@@ -103,5 +102,12 @@ public async Task<IActionResult> Register(User user)
             var bytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(password));
             return Convert.ToBase64String(bytes);
         }
+    }
+
+    // Kelas pembantu baru agar sistem tidak meminta data NamaLengkap saat melakukan login
+    public class LoginRequest
+    {
+        public string Username { get; set; } = string.Empty;
+        public string Password { get; set; } = string.Empty;
     }
 }
