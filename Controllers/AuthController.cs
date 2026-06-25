@@ -68,7 +68,7 @@ public async Task<IActionResult> Register(User user)
 
             // 3. Proses JWT Token
             var jwtSettings = _configuration.GetSection("Jwt");
-            var key = Encoding.ASCII.GetBytes(jwtSettings["Key"]!);
+            var key = Encoding.UTF8.GetBytes(jwtSettings["Key"]!);
 
             var tokenDescriptor = new SecurityTokenDescriptor
             {
