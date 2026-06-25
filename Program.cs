@@ -35,13 +35,11 @@ builder.Services.AddAuthentication(options =>
 {
     options.TokenValidationParameters = new TokenValidationParameters
     {
-        ValidateIssuer = true,
-        ValidateAudience = true,
-        ValidateLifetime = true,
-        ValidateIssuerSigningKey = true,
-        ValidIssuer = jwtSettings["Issuer"],
-        ValidAudience = jwtSettings["Audience"],
-        IssuerSigningKey = new SymmetricSecurityKey(key)
+        ValidateIssuer = false,         //  Diubah jadi false agar tidak pilih-pilih server
+        ValidateAudience = false,       //  Diubah jadi false agar Flutter & Vercel bebas masuk
+        ValidateLifetime = true,        //  Tetap periksa masa kedaluwarsa token
+        ValidateIssuerSigningKey = true, //  Tetap wajib mencocokkan kunci rahasia
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!))
     };
 });
 
